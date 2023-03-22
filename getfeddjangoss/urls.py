@@ -8,5 +8,6 @@ urlpatterns = [
     path('categoriesDetail/',views.categoriesDetail),
     path('viewProfile/',views.viewProfileDetail),
     path('cntnOwnerDetail/',views.cntnOwnersDetail),
+    path('route/',views.post),
     # path('restaurants/',views.restaurantsDetails)
 ]
