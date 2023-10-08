@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
-
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,8 +21,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-+8w4uk-3wf7q25ojexd@whtpnc%6!o2(!-(0257syrscer@!9-'
-GOOGLE_MAPS_API_KEY='AIzaSyB1LHJybUmhHBTbgrdHTD81R2ZgvO6CZlQ'
+# GOOGLE_MAPS_API_KEY='AIzaSyB1LHJybUmhHBTbgrdHTD81R2ZgvO6CZlQ'
 # SECURITY WARNING: don't run with debug turned on in production!
+GOOGLE_MAPS_API_KEY='AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
@@ -38,11 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'application'
+    'knox',
+    'corsheaders',
+    'application',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -54,11 +58,12 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'getfeddjangoss.urls'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR,'build')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -116,12 +121,37 @@ USE_I18N = True
 USE_TZ = True
 
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS=True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT=os.path.join(BASE_DIR,'staticfiles')
+STATICFILES_DIRS=[
+    os.path.join(BASE_DIR,"static_cdn"),
+    os.path.join(BASE_DIR,'build','static'),
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+MEDIA_ROOT='/media/'
+
+MEDIA_ROOT=os.path.join(BASE_DIR,'media')
+ 
+STATICFILES_DIRS=(
+    os.path.join(BASE_DIR,'static'),
+)
+
+REST_FRAMEWORK={
+    'DEFAULT_AUTHENTICATION_CLASSES':[
+        'knox.auth.TokenAuthentication',
+    ],
+    'DEFAULT_SCHEMA_CLASS':'rest_framework.schemas.coreapi.AutoSchema',
+    'DEFAULT_PERMISSION_CLASSES':[
+        'rest_framework.permissions.AllowAny',
+    ]
+}
